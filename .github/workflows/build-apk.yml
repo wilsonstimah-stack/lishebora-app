@@ -24,17 +24,17 @@ jobs:
         pip install buildozer cython==0.29.33
     
     - name: Build APK (Debug)
+      # using yes to accept licenses if needed, but capturing output
       run: |
-        yes | buildozer android debug
-    
-    - name: Build APK (Release)
-      # Building release version which produces AAB for Play Store
-      run: |
-        # yes | buildozer android release
-        # For now, just debug output is fine for direct install
-        echo "Build complete"
+        # Set JAVA_HOME
+        export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+        export PATH=$JAVA_HOME/bin:$PATH
+        
+        # Run buildozer with verbose output
+        buildozer android debug || { echo "Build failed"; exit 1; }
     
     - name: Upload APK
+      if: success()
       uses: actions/upload-artifact@v4
       with:
         name: LisheBora-APK
